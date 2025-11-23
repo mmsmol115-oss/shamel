@@ -87,20 +87,37 @@ button:hover {
   text-align:center;
 }
 
-/* تحسين العرض على الجوال */
+/* تحسين العرض على الشاشات الصغيرة (الجوال) */
 @media (max-width:600px) {
-  h2 {
-    font-size:24px;
+  .container {
+    margin:20px;
+    padding:20px;
+    border-radius:15px;
   }
+
+  h2 {
+    font-size:22px;
+  }
+
+  label {
+    font-size:14px;
+  }
+
   input, select {
     font-size:14px;
     padding:10px;
   }
+
   button {
     font-size:16px;
     padding:12px;
   }
+
   .result {
-    font-size:18px;
+    font-size:16px;
+  }
+
+  .note {
+    font-size:12px;
   }
 }
