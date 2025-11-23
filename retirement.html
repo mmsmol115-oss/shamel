@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة التقاعد</title>
+  <style>
+    body {font-family: Tahoma; direction: rtl; background: #0f172a; color: #f1f5f9; margin:0; padding:0;}
+    .container {background:#1e293b; padding:30px; border-radius:20px; max-width:800px; margin:50px auto;
+      box-shadow:0 0 30px rgba(34,197,94,0.4); border:2px solid #22c55e;}
+    h2 {text-align:center; color:#22c55e; font-size:32px; margin-bottom:20px;}
+    label {display:block; margin-top:15px; font-weight:bold; color:#86efac;}
+    input, select {width:100%; padding:12px; margin-top:8px; border:1px solid #22c55e; border-radius:8px;
+      background:#334155; color:#fff; font-size:16px;}
+    select option {background:#1e293b; color:#22c55e; padding:6px; font-weight:bold;}
+    button {width:100%; padding:14px; margin-top:25px; border:none; border-radius:10px;
+      background:linear-gradient(45deg,#22c55e,#86efac); color:#000; font-size:18px; font-weight:bold;
+      cursor:pointer; transition:0.3s;}
+    button:hover {transform:scale(1.05); box-shadow:0 0 15px rgba(34,197,94,0.6);}
+    .result {margin-top:25px; font-size:20px; color:#22c55e; text-align:center; font-weight:bold; white-space:pre-line;}
+    .warn {color:#f87171; font-weight:bold; margin-top:10px; text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>حاسبة التقاعد</h2>
+
+    <label>النظام:</label>
+    <select id="system">
+      <option value="عسكري">التقاعد العسكري</option>
+      <option value="مدني">التقاعد المدني</option>
+      <option value="خاص">القطاع الخاص</option>
+    </select>
+
+    <label>آخر راتب أساسي:</label>
+    <input type="number" id="salary" placeholder="أدخل آخر راتب" min="0">
+
+    <label>عدد سنوات الخدمة:</label>
+    <input type="number" id="years" placeholder="أدخل عدد السنوات" min="0">
+
+    <label>سبب التقاعد:</label>
+    <select id="reason"></select>
+
+    <button id="calcBtn">احسب </button>
+    <div class="result" id="result"></div>
+    <div class="warn" id="warning"></div>
+  </div>
+
+  <script>
+    function buildReasonOptions(system) {
+      const opts = [];
+      opts.push({ val: "", txt: "— اختر سبب التقاعد —", disabled: true, selected: true });
+
+      if (system === "عسكري") {
+        opts.push(
+          {val:"بلوغ_او_عجز",txt:"بلوغ السن النظامي أو العجز أو الوفاة"},
+          {val:"مبكر",txt:"تقاعد مبكر (18 سنة خدمة أو 55 سنة عمر)"},
+          {val:"15",txt:"خدمة 15 سنة بطلبه وموافقة الوزير"}
+        );
+      } else if (system === "مدني") {
+        opts.push(
+          {val:"25",txt:"خدمة 25 سنة فأكثر"},
+          {val:"20",txt:"خدمة 20 سنة بطلبه وموافقة الجهة"},
+          {val:"15",txt:"خدمة 15 سنة بقرار مجلس الوزراء/أمر سامٍ"},
+          {val:"وفاة_عجز_سن",txt:"وفاة أو عجز أو بلوغ سن التقاعد (60)"}
+        );
+      } else if (system === "خاص") {
+        opts.push(
+          {val:"نظامي",txt:"بلوغ السن النظامي"},
+          {val:"مبكر",txt:"تقاعد مبكر (55 سنة + 10 سنوات خدمة)"}
+        );
+      }
+      return opts;
+    }
+
+    function updateReasons() {
+      const system = document.getElementById("system").value;
+      const reasonSelect = document.getElementById("reason");
+      const options = buildReasonOptions(system);
+
+      reasonSelect.innerHTML = "";
+      options.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.val;
+        opt.text = o.txt;
+        if (o.disabled) opt.disabled = true;
+        if (o.selected) opt.selected = true;
+        reasonSelect.add(opt);
+      });
+    }
+
+    function calculate() {
+      const system = document.getElementById("system").value;
+      const salary = parseFloat(document.getElementById("salary").value);
+      const years = parseInt(document.getElementById("years").value);
+      const reason = document.getElementById("reason").value;
+      const warning = document.getElementById("warning");
+      const result = document.getElementById("result");
+
+      warning.innerText = "";
+      result.innerText = "";
+
+      if (!salary || salary <= 0) { warning.innerText = "الرجاء إدخال راتب صحيح."; return; }
+      if (!years || years < 0) { warning.innerText = "الرجاء إدخال سنوات خدمة صحيحة."; return; }
+      if (!reason) { warning.innerText = "الرجاء اختيار سبب التقاعد."; return; }
+
+      let pension = 0, text = "";
+
+      if (system === "عسكري") {
+        if (reason === "بلوغ_او_عجز") {
+          pension = salary * (years / 35);
+        } else if (reason === "مبكر") {
+          if (years >= 18) {
+            pension = salary * (years / 35);
+          } else {
+            warning.innerText = "الحد الأدنى للتقاعد المبكر العسكري هو 18 سنة خدمة.";
+          }
+        } else if (reason === "15") {
+          if (years >= 15) {
+            pension = salary * (years / 35);
+          } else {
+            warning.innerText = "هذه الحالة تتطلب 15 سنة خدمة على الأقل.";
+          }
+        }
+        if (pension > salary) pension = salary;
+        if (pension > 0) text = "المعاش العسكري: " + pension.toFixed(2);
+      }
+
+      else if (system === "مدني") {
+        if (reason === "25" && years >= 25) {
+          pension = (salary * years) / 40;
+        } else if (reason === "20" && years >= 20) {
+          pension = (salary * years) / 40;
+        } else if (reason === "15" && years >= 15) {
+          pension = (salary * years) / 40;
+        } else if (reason === "وفاة_عجز_سن") {
+          pension = (salary * years) / 40;
+        } else {
+          warning.innerText = "لا يستحق معاش وفق السبب المختار.";
+        }
+        if (pension > salary) pension = salary;
+        if (pension > 0) text = "المعاش المدني: " + pension.toFixed(2);
+      }
+
+      else if (system === "خاص") {
+        if (reason === "نظامي") {
+          pension = salary * 0.02 * years;
+        } else if (reason === "مبكر") {
+          if (years >= 10) {
+            pension = salary * 0.02 * years;
+          } else {
+            warning.innerText = "التقاعد المبكر يتطلب خدمة لا تقل عن 10 سنوات.";
+          }
+        }
+        if (pension > salary) pension = salary;
+        if (pension > 0) text = "معاش التأمينات الاجتماعية: " + pension.toFixed(2);
+      }
+
+      result.innerText = text;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateReasons();
+      document.getElementById('calcBtn').addEventListener('click', calculate);
+      document.getElementById('system').addEventListener('change', updateReasons);
+    });
+  </script>
+</body>
+</html>
+<button onclick="window.location.href='index.html'" 
+        style="margin-top:20px; padding:12px 20px; border:none; border-radius:8px;
+               background:#22c55e; color:#0f172a; font-size:16px; font-weight:bold;
+               cursor:pointer; transition:0.3s;">
+  ⬅️ رجوع إلى الصفحة الرئيسية
+</button>

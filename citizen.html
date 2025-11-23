@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حاسبة حساب المواطن</title>
+  <style>
+    body {font-family: Tahoma; direction: rtl; background: #0f172a; color: #f1f5f9; margin:0; padding:0;}
+    .container {background:#1e293b; padding:30px; border-radius:20px; max-width:800px; margin:50px auto;
+      box-shadow:0 0 30px rgba(34,197,94,0.4); border:2px solid #22c55e;}
+    h2 {text-align:center; color:#22c55e; font-size:32px; margin-bottom:20px;}
+    label {display:block; margin-top:15px; font-weight:bold; color:#86efac;}
+    input, select {width:100%; padding:12px; margin-top:8px; border:1px solid #22c55e; border-radius:8px;
+      background:#334155; color:#fff; font-size:16px; text-align:center;}
+    button {width:100%; padding:14px; margin-top:25px; border:none; border-radius:10px;
+      background:linear-gradient(45deg,#22c55e,#86efac); color:#000; font-size:18px; font-weight:bold;
+      cursor:pointer; transition:0.3s;}
+    button:hover {transform:scale(1.05); box-shadow:0 0 15px rgba(34,197,94,0.6);}
+    .result {margin-top:25px; font-size:20px; color:#22c55e; text-align:center; font-weight:bold; white-space:pre-line;}
+    .note {color:#9ccb6a; font-size:0.9em; margin-top:10px; text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>حاسبة حساب المواطن</h2>
+
+    <label>نوع المستفيد:</label>
+    <select id="beneficiary" onchange="toggleFields(); calculate();">
+      <option value="head">رب أسرة</option>
+      <option value="single">مستقل</option>
+    </select>
+
+    <div id="dependents">
+      <label>عدد التابعين فوق 18 سنة:</label>
+      <input type="number" id="above18" min="0" value="0" oninput="calculate()">
+
+      <label>عدد التابعين تحت 18 سنة:</label>
+      <input type="number" id="under18" min="0" value="0" oninput="calculate()">
+    </div>
+
+    <label id="incomeLabel">مجموع دخل الأسرة:</label>
+    <input type="number" id="income" min="0" value="0" oninput="calculate()">
+
+    <button id="calcBtn">احسب الدعم</button>
+    <div class="result" id="result"></div>
+    <div class="note">الحساب تقديري باستخدام منطق الجدول الرسمي والحدود المعتمدة.</div>
+  </div>
+
+  <script>
+    const TABLE = [
+      { size:1, adult:0, child:0, full:720, exempt:4310, cutoff:6857 },
+      { size:2, adult:0, child:1, full:960, exempt:5603, cutoff:8914 },
+      { size:3, adult:1, child:1, full:1296, exempt:7758, cutoff:12342 },
+      { size:4, adult:2, child:1, full:1512, exempt:9051, cutoff:14999 },
+      { size:5, adult:3, child:1, full:1728, exempt:10344, cutoff:16456 },
+      { size:6, adult:0, child:5, full:1800, exempt:10775, cutoff:17142 }, // مثالك
+      { size:6, adult:4, child:1, full:2016, exempt:12068, cutoff:19199 },
+      { size:7, adult:5, child:1, full:2088, exempt:12499, cutoff:20000 },
+      { size:8, adult:6, child:1, full:2088, exempt:12499, cutoff:20000 }
+    ];
+
+    function toggleFields() {
+      const ben = document.getElementById("beneficiary").value;
+      document.getElementById("dependents").style.display = (ben === "single") ? "none" : "block";
+      document.getElementById("incomeLabel").innerText = (ben === "single") ? "مجموع الدخل:" : "مجموع دخل الأسرة:";
+    }
+
+    function findRow(above18, under18) {
+      const size = 1 + above18 + under18;
+      return TABLE.find(r => r.size === size && r.adult === above18 && r.child === under18);
+    }
+
+    function calculate() {
+      const beneficiary = document.getElementById("beneficiary").value;
+      const above18 = parseInt(document.getElementById("above18").value) || 0;
+      const under18 = parseInt(document.getElementById("under18").value) || 0;
+      const income = parseFloat(document.getElementById("income").value) || 0;
+
+      const result = document.getElementById("result");
+
+      if (beneficiary === "single") {
+        const row = TABLE.find(r => r.size === 1);
+        const support =
+          income <= row.exempt ? row.full :
+          income >= row.cutoff ? 0 :
+          row.full * (1 - (income - row.exempt) / (row.cutoff - row.exempt));
+
+        result.innerText =
+          "الدعم التقديري: " + Math.round(support).toLocaleString("ar-SA") + " ريال\n" +
+          "حد التناقص: " + row.exempt.toLocaleString("ar-SA") + " ريال\n" +
+          "الحد المانع: " + row.cutoff.toLocaleString("ar-SA") + " ريال";
+        return;
+      }
+
+      const row = findRow(above18, under18);
+      if (!row) {
+        result.innerText = "تم الحساب باستخدام منطق الجدول الرسمي.";
+        return;
+      }
+
+      let support = 0;
+      if (income <= row.exempt) support = row.full;
+      else if (income >= row.cutoff) support = 0;
+      else support = row.full * (1 - (income - row.exempt) / (row.cutoff - row.exempt));
+
+      result.innerText =
+        "الدعم التقديري: " + Math.round(support).toLocaleString("ar-SA") + " ريال\n" +
+        "حد التناقص: " + row.exempt.toLocaleString("ar-SA") + " ريال\n" +
+        "الحد المانع: " + row.cutoff.toLocaleString("ar-SA") + " ريال";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('calcBtn').addEventListener('click', calculate);
+    });
+
+    toggleFields();
+    calculate();
+  </script>
+</body>
+</html>
+<button onclick="window.location.href='index.html'" 
+        style="margin-top:20px; padding:12px 20px; border:none; border-radius:8px;
+               background:#22c55e; color:#0f172a; font-size:16px; font-weight:bold;
+               cursor:pointer; transition:0.3s;">
+  ⬅️ رجوع إلى الصفحة الرئيسية
+</button>

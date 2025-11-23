@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة الضمان الاجتماعي المطور</title>
+  <style>
+    body {font-family: Tahoma; direction: rtl; background: #0f172a; color: #f1f5f9; margin:0; padding:0;}
+    .container {background:#1e293b; padding:30px; border-radius:20px; max-width:800px; margin:50px auto;
+      box-shadow:0 0 30px rgba(34,197,94,0.4); border:2px solid #22c55e;}
+    h2 {text-align:center; color:#22c55e; font-size:32px; margin-bottom:20px;}
+    label {display:block; margin-top:15px; font-weight:bold; color:#86efac;}
+    input {width:100%; padding:12px; margin-top:8px; border:1px solid #22c55e; border-radius:8px;
+      background:#334155; color:#fff; font-size:16px;}
+    button {width:100%; padding:14px; margin-top:25px; border:none; border-radius:10px;
+      background:linear-gradient(45deg,#22c55e,#86efac); color:#000; font-size:18px; font-weight:bold;
+      cursor:pointer; transition:0.3s;}
+    button:hover {transform:scale(1.05); box-shadow:0 0 15px rgba(34,197,94,0.6);}
+    .result {margin-top:25px; font-size:20px; color:#22c55e; text-align:center; font-weight:bold; white-space:pre-line;}
+    .warn {color:#f87171; font-weight:bold; margin-top:10px; text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>حاسبة الضمان الاجتماعي المطور</h2>
+
+    <label>عدد أفراد الأسرة (يشمل رب الأسرة):</label>
+    <input type="number" id="members" placeholder="مثال: 4">
+
+    <label>الدخل المكتسب الشهري:</label>
+    <input type="number" id="earned" placeholder="مثال: 4000">
+
+    <label>الدخل غير المكتسب الشهري:</label>
+    <input type="number" id="unearned" placeholder="مثال: 0">
+
+    <label>المبالغ المستثناة (مثل دعم الغذاء والكهرباء والإعاقة):</label>
+    <input type="number" id="excluded" placeholder="مثال: 0">
+
+    <button id="calcBtn">احسب </button>
+    <div class="result" id="result"></div>
+    <div class="warn" id="warning"></div>
+  </div>
+
+  <script>
+    const cfg = {
+      headAmount: 1100,       // رب الأسرة
+      dependentAmount: 550,   // لكل تابع
+      earnedIncomeFactor: 0.5,
+      unearnedIncomeFactor: 1.0
+    };
+
+    function f(n){ return new Intl.NumberFormat('ar-SA').format(Math.max(0, Math.round(n))); }
+
+    function calculate(){
+      const members = parseInt(document.getElementById("members").value) || 0;
+      const earned = parseFloat(document.getElementById("earned").value) || 0;
+      const unearned = parseFloat(document.getElementById("unearned").value) || 0;
+      const excluded = parseFloat(document.getElementById("excluded").value) || 0;
+
+      const warning = document.getElementById("warning");
+      const result = document.getElementById("result");
+      warning.innerText = "";
+      result.innerText = "";
+
+      if (members < 1) { warning.innerText = "⚠️ الرجاء إدخال عدد أفراد الأسرة (1 على الأقل)."; return; }
+
+      const dependents = members - 1;
+      const target = cfg.headAmount + dependents * cfg.dependentAmount;
+
+      const countedIncome = Math.max(0,
+        earned * cfg.earnedIncomeFactor +
+        unearned * cfg.unearnedIncomeFactor -
+        excluded
+      );
+
+      const pension = Math.max(0, target - countedIncome);
+
+      result.innerText =
+        "الحد الأدنى للأسرة: " + f(target) + " ريال\n" +
+        "الدخل المحتسب: " + f(countedIncome) + " ريال\n" +
+        "المعاش النهائي: " + f(pension) + " ريال";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('calcBtn').addEventListener('click', calculate);
+    });
+  </script>
+</body>
+</html>
+<button onclick="window.location.href='index.html'" 
+        style="margin-top:20px; padding:12px 20px; border:none; border-radius:8px;
+               background:#22c55e; color:#0f172a; font-size:16px; font-weight:bold;
+               cursor:pointer; transition:0.3s;">
+  ⬅️ رجوع إلى الصفحة الرئيسية
+</button>

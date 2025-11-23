@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة مكافأة نهاية الخدمة</title>
+  <style>
+    body {
+      font-family: "Tahoma", Arial, sans-serif;
+      direction: rtl;
+      background: #0f172a; /* خلفية داكنة */
+      color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 800px;
+      margin: 50px auto;
+      box-shadow: 0 0 30px rgba(34,197,94,0.4); /* ظل أخضر */
+      border: 2px solid #22c55e; /* أخضر مذهب */
+    }
+    h2 {
+      text-align: center;
+      color: #22c55e; /* أخضر مذهب */
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #86efac; /* أخضر فاتح */
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #22c55e; /* أخضر مذهب */
+      border-radius: 8px;
+      background: #334155; /* خلفية حقول */
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 25px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #22c55e, #86efac); /* تدرج أخضر */
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(34,197,94,0.6);
+    }
+    .result {
+      margin-top: 25px;
+      font-size: 20px;
+      color: #22c55e; /* أخضر مذهب */
+      text-align: center;
+      font-weight: bold;
+      white-space: pre-line;
+    }
+    .note {
+      color: #9ccb6a;
+      font-size: 0.9em;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>حاسبة مكافأة نهاية الخدمة</h2>
+
+    <label>النظام:</label>
+    <select id="system" onchange="updateReasons()">
+      <option value="مدني">الموظف الحكومي المدني</option>
+      <option value="عسكري">الموظف الحكومي العسكري</option>
+      <option value="خاص">الموظف في القطاع الخاص</option>
+    </select>
+
+    <label>آخر راتب:</label>
+    <input type="number" id="salary" placeholder="أدخل آخر راتب">
+
+    <label>عدد سنوات الخدمة:</label>
+    <input type="number" id="years" placeholder="أدخل عدد السنوات">
+
+    <label id="leaveLabel">رصيد الإجازات (بالأيام) (للحكومي فقط):</label>
+    <input type="number" id="leaveDays" placeholder="أدخل عدد الأيام">
+
+    <label>سبب إنهاء الخدمة:</label>
+    <select id="reason"></select>
+
+    <button onclick="calculate()">احسب المكافأة</button>
+    <div class="result" id="result"></div>
+    <div class="note">الحساب تقديري باستخدام منطق اللوائح الرسمية.</div>
+  </div>
+
+  <script>
+    // تحديث قائمة الأسباب حسب النظام
+    function updateReasons() {
+      const system = document.getElementById("system").value;
+      const reasonSelect = document.getElementById("reason");
+      reasonSelect.innerHTML = "";
+
+      if (system === "مدني" || system === "عسكري") {
+        document.getElementById("leaveLabel").style.display = "block";
+        document.getElementById("leaveDays").style.display = "block";
+
+        const options = [
+          {val:"بلوغ_او_عجز",txt:"بلوغ السن النظامي أو العجز"},
+          {val:"مبكر",txt:"تقاعد مبكر"}
+        ];
+        options.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt.val;
+          option.text = opt.txt;
+          reasonSelect.add(option);
+        });
+      } else if (system === "خاص") {
+        document.getElementById("leaveLabel").style.display = "none";
+        document.getElementById("leaveDays").style.display = "none";
+
+        const options = [
+          {val:"تراضي",txt:"إنهاء العقد بالتراضي"},
+          {val:"انتهاء",txt:"انتهاء مدة العقد"},
+          {val:"إشعار",txt:"إنهاء العقد غير محدد المدة بإشعار"},
+          {val:"تقاعد",txt:"بلوغ سن التقاعد"},
+          {val:"قوة_قاهرة",txt:"القوة القاهرة"},
+          {val:"إغلاق",txt:"إغلاق المنشأة أو إنهاء النشاط"},
+          {val:"استقالة",txt:"استقالة العامل"},
+          {val:"إفلاس",txt:"قرار أو حكم وفق نظام الإفلاس"}
+        ];
+        options.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt.val;
+          option.text = opt.txt;
+          reasonSelect.add(option);
+        });
+      }
+    }
+
+    // حساب المكافأة
+    function calculate() {
+      const system = document.getElementById("system").value;
+      const salary = parseFloat(document.getElementById("salary").value);
+      const years = parseInt(document.getElementById("years").value);
+      const leaveDays = parseInt(document.getElementById("leaveDays").value) || 0;
+      const reason = document.getElementById("reason").value;
+
+      if (!salary || !years) {
+        document.getElementById("result").innerText = "⚠️ الرجاء إدخال الراتب وعدد السنوات بشكل صحيح.";
+        return;
+      }
+
+      let compensation = 0;
+
+      if (system === "مدني" || system === "عسكري") {
+        const maxLeaveDays = 90;
+        const leaveCompensation = (Math.min(leaveDays, maxLeaveDays) / 30) * salary;
+
+        if (reason === "بلوغ_او_عجز") {
+          compensation = (salary * 6) + leaveCompensation;
+        } else if (reason === "مبكر") {
+          if ((system === "مدني" && years >= 20) || (system === "عسكري" && years >= 18)) {
+            compensation = (salary * 4) + leaveCompensation;
+          }
+        }
+      }
+
+      else if (system === "خاص") {
+        if (reason !== "استقالة") {
+          if (years <= 5) {
+            compensation = (salary / 2) * years;
+          } else {
+            compensation = (salary / 2) * 5 + (salary * (years - 5));
+          }
+        } else if (reason === "استقالة") {
+          if (years < 2) {
+            compensation = 0;
+          } else if (years >= 2 && years < 5) {
+            compensation = ((salary / 2) * years) / 3;
+          } else if (years >= 5 && years < 10) {
+            compensation = (((salary / 2) * 5 + salary * (years - 5))) * (2/3);
+          } else if (years >= 10) {
+            compensation = (salary / 2) * 5 + (salary * (years - 5));
+          }
+        }
+      }
+
+      document.getElementById("result").innerText =
+        "المكافأة (" + system + "): " + compensation.toFixed(2) + " ريال";
+    }
+
+    // تشغيل أولي
+    updateReasons();
+  </script>
+</body>
+</html>
+<button onclick="window.location.href='index.html'" 
+        style="margin-top:20px; padding:12px 20px; border:none; border-radius:8px;
+               background:#22c55e; color:#0f172a; font-size:16px; font-weight:bold;
+               cursor:pointer; transition:0.3s;">
+  ⬅️ رجوع إلى الصفحة الرئيسية
+</button>
