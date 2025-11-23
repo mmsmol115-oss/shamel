@@ -121,3 +121,30 @@ button:hover {
     font-size:12px;
   }
 }
+@media (max-width:600px) {
+  .container {
+    margin: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  input, select {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .result {
+    font-size: 16px;
+  }
+}
