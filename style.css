@@ -470,4 +470,49 @@ button:hover {
   .card {font-size:10px; padding:5px; margin:2px;}
   .grid {grid-template-columns:repeat(auto-fit, minmax(80px, 1fr)); gap:3px; margin:2px;}
 }
+/* الحاوية العامة للأقسام */
+.container {
+  background:#1e293b;
+  padding:6px;             /* حشو داخلي صغير جدًا */
+  border-radius:6px;
+  width:100%;
+  max-width:100%;
+  margin:3px auto;         /* هوامش شبه معدومة بين الأقسام */
+  box-shadow:0 0 6px rgba(34,197,94,0.4);
+  border:1px solid #22c55e;
+}
+
+/* البطاقات */
+.card {
+  background:#1e293b;
+  margin:2px;              /* مسافة صغيرة جدًا بين البطاقات */
+  padding:5px;             /* حشو داخلي صغير */
+  border-radius:5px;
+  box-shadow:0 1px 4px rgba(34,197,94,0.6); /* ظل واضح لإبراز البطاقة */
+  color:#22c55e;
+  font-size:10px;          /* خط أصغر */
+  text-align:center;
+  line-height:1.2;         /* تقليل ارتفاع السطر */
+  border:1px solid #22c55e;
+}
+
+/* شبكة البطاقات */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(70px, 1fr)); /* بطاقات أصغر جدًا */
+  gap:3px;                /* فراغات شبه معدومة */
+  margin:2px;
+}
+
+/* تحسين العرض على الشاشات الصغيرة */
+@media (max-width:600px){
+  h2 {font-size:13px; margin-bottom:4px;}
+  label {font-size:11px; margin-top:2px;}
+  input, select {font-size:11px; padding:4px;}
+  button {font-size:11px; padding:5px; margin-top:4px;}
+  .result {font-size:11px;}
+  .warn {font-size:11px;}
+  .card {font-size:9px; padding:4px; margin:2px;}
+  .grid {grid-template-columns:repeat(auto-fit, minmax(65px, 1fr)); gap:2px; margin:2px;}
+}
 
