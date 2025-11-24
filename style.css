@@ -86,3 +86,30 @@ button:hover {
   .result {font-size:16px;}
   .warn {font-size:14px;}
 }
+/* تصغير البطاقات بشكل عام */
+.card {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* شبكة البطاقات أصغر وتحتوي أعمدة مناسبة للجوال */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+/* ضبط إضافي للجوال تحت 600px */
+@media (max-width: 600px) {
+  .card {
+    padding: 8px;
+    font-size: 12px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 6px;
+    margin: 8px;
+  }
+}
