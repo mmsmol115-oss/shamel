@@ -1,7 +1,7 @@
 {
   "name": "شامل",
   "short_name": "شامل",
-  "start_url": "/",
+"start_url": "/shamel/index.html"
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#6fae3f",
@@ -12,4 +12,5 @@
       "type": "image/png"
     }
   ]
+
 }
