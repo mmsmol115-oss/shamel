@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function(){
     { name:'الضمان المطور', day:1 },
     { name:'ساند', day:1 },
     { name:'حافز', day:5 },
-    { name:' دعم ريف(متغير)', day:10, highlight:true },
+    { name:'دعم ريف', day:10, highlight:true },
     { name:'الدعم الزراعي', day:1 },
     { name:'حساب المواطن', day:10 },
     { name:'الدعم العقاري', day:24 },
@@ -130,4 +130,4 @@ document.addEventListener('DOMContentLoaded', function(){
           t.getFullYear() === now.getFullYear()) {
         return t;
       }
-      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0
+      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0, 0,
