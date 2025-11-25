@@ -121,54 +121,66 @@ document.addEventListener('DOMContentLoaded', function(){
     { name:'يوم التأسيس السعودي', fixedMonth:1, fixedDay:22, highlight:true }
   ];
 
+  // ✅ تعديل الدالة بحيث لا تقفز للشهر القادم إذا اليوم هو يوم الصرف
   function nextTargetFrom(event, now){
     if (event.fixedMonth !== undefined) {
-      let t = new Date(now.getFullYear(), event.fixedMonth, event.fixedDay);
-      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay);
+      let t = new Date(now.getFullYear(), event.fixedMonth, event.fixedDay, 0, 0, 0);
+      if (t.getDate() === now.getDate() &&
+          t.getMonth() === now.getMonth() &&
+          t.getFullYear() === now.getFullYear()) {
+        return t;
+      }
+      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0, 0, 0);
       return t;
     } else {
-      let t = new Date(now.getFullYear(), now.getMonth(), event.day);
-      if (t < now) t = new Date(now.getFullYear(), now.getMonth()+1, event.day);
+      let t = new Date(now.getFullYear(), now.getMonth(), event.day, 0, 0, 0);
+      if (t.getDate() === now.getDate() &&
+          t.getMonth() === now.getMonth() &&
+          t.getFullYear() === now.getFullYear()) {
+        return t;
+      }
+      if (t < now) t = new Date(now.getFullYear(), now.getMonth()+1, event.day, 0, 0, 0);
       return t;
     }
   }
-function updateCountdowns(){
-  const now2 = new Date();
-  const startOfToday = new Date(now2.getFullYear(), now2.getMonth(), now2.getDate(), 0, 0, 0);
 
-  const items = events.map(ev=>{
-    const target = nextTargetFrom(ev, now2);
-    const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0);
+  function updateCountdowns(){
+    const now2 = new Date();
+    const startOfToday = new Date(now2.getFullYear(), now2.getMonth(), now2.getDate(), 0, 0, 0);
 
-    let text;
-    let diffDays = Math.floor((startOfTarget - startOfToday) / (1000 * 60 * 60 * 24));
+    const items = events.map(ev=>{
+      const target = nextTargetFrom(ev, now2);
+      const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0);
 
-    // 👇 إذا اليوم يساوي يوم الصرف
-    if (diffDays === 0) {
-      text = 'اليوم ✅';
-    } else if (diffDays > 0) {
-      text = `متبقي ${diffDays} يوم`;
-    } else {
-      // لو حصل خطأ في الحساب نخليها اليوم
-      text = 'اليوم ✅';
-      diffDays = 0;
-    }
+      let diffDays = Math.floor((startOfTarget - startOfToday) / (1000 * 60 * 60 * 24));
+      let text;
 
-    return { name:ev.name, highlight:ev.highlight, diff:diffDays, text:text };
-  }).sort((a,b)=> a.diff - b.diff);
+      if (diffDays === 0) {
+        text = 'اليوم ✅';
+      } else if (diffDays > 0) {
+        text = `متبقي ${diffDays} يوم`;
+      } else {
+        text = 'اليوم ✅';
+        diffDays = 0;
+      }
 
-  countdownGrid.innerHTML = '';
-  items.forEach(item=>{
-    const card = document.createElement('div');
-    card.className = 'countdown-card' + (item.text.includes('اليوم') ? ' done' : '');
-    const nameHtml = `<strong class="${item.highlight ? 'hl' : ''}">${item.name}</strong>`;
-    card.innerHTML = `${nameHtml}<br>${item.text}`;
-    countdownGrid.appendChild(card);
-  });
-}
+      return { name:ev.name, highlight:ev.highlight, diff:diffDays, text:text };
+    }).sort((a,b)=> a.diff - b.diff);
+
+    countdownGrid.innerHTML = '';
+    items.forEach(item=>{
+      const card = document.createElement('div');
+      card.className = 'countdown-card' + (item.text.includes('اليوم') ? ' done' : '');
+      const nameHtml = `<strong class="${item.highlight ? 'hl' : ''}">${item.name}</strong>`;
+      card.innerHTML = `${nameHtml}<br>${item.text}`;
+      countdownGrid.appendChild(card);
+    });
+  }
 
   updateCountdowns();
   setInterval(updateCountdowns, 1000);
+});
+
 
   // محول التاريخ (اختياري)
   function onlyDigits(s){ return String(s).replace(/\D+/g,''); }
@@ -234,6 +246,7 @@ function updateCountdowns(){
 </script>
 </body>
 </html>
+
 
 
 
