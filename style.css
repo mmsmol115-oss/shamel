@@ -16,7 +16,7 @@ header {
   font-weight: bold;
 }
 
-.home-grid {
+.grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* عمودين على الكمبيوتر */
   gap: 16px;
@@ -25,7 +25,7 @@ header {
   padding: 0 16px;
 }
 
-.card {
+.icon {
   display: block;
   background: #1e293b;
   border: 2px solid #22c55e;
@@ -39,14 +39,14 @@ header {
   transition: transform 0.2s ease;
 }
 
-.card:hover {
+.icon:hover {
   transform: scale(1.05);
   background: #22c55e;
   color: #0f172a;
 }
 
 /* زر الرجوع الثابت */
-.icon {
+.back-btn {
   position: fixed;
   bottom: 15px;
   left: 50%;
@@ -65,7 +65,7 @@ header {
   z-index: 999;
 }
 
-.icon:hover {
+.back-btn:hover {
   background: linear-gradient(135deg, #16a34a, #FFD700);
   color: #0f172a;
   transform: translateX(-50%) scale(1.08);
@@ -73,10 +73,10 @@ header {
 
 /* للجوال */
 @media (max-width: 640px) {
-  .home-grid {
+  .grid {
     grid-template-columns: 1fr; /* عمود واحد */
   }
-  .card {
+  .icon {
     font-size: 16px;
     padding: 14px;
   }
