@@ -16,11 +16,11 @@ header { background:var(--panel); padding:12px; text-align:center; font-size:18p
 .section-card { background:var(--panel); margin:6px; padding:12px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.5); color:var(--accent); }
 h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
 
-/* شبكة الحاسبات: أربعة أزرار في صف واحد */
+/* شبكة الحاسبات */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px; /* فصل واضح بين الأزرار */
+  gap: 10px;
   margin: 12px 0;
 }
 .icon {
@@ -146,4 +146,12 @@ document.addEventListener('DOMContentLoaded', function(){
   ];
 
   function nextTargetFrom(event, now){
-    let t = new Date(now.getFull
+    let t = new Date(now.getFullYear(), now.getMonth(), event.day);
+    if (t < now) t = new Date(now.getFullYear(), now.getMonth()+1, event.day);
+    return t;
+  }
+
+  function updateCountdowns(){
+    const grid = document.getElementById("countdownGrid");
+    if(!grid) return;
+    const now2 = new Date
