@@ -1,93 +1,63 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <!-- وسم العرض للجوال -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>حاسبة الضمان الاجتماعي المطور</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h2>حاسبة الضمان الاجتماعي المطور</h2>
+:root {
+  --bg:#000; --panel:#111; --text:#f1f5f9;
+  --accent:#22c55e; --alert:#b22222; --gold:#FFD700;
+}
 
-    <label>عدد أفراد الأسرة (يشمل رب الأسرة):</label>
-    <input type="number" id="members" placeholder="مثال: 4">
+body {
+  margin:0; padding:0;
+  background:var(--bg); color:var(--text);
+  font-family:'Tahoma';
+  display:flex; flex-direction:column;
+  min-height:100vh;
+  padding-bottom:100px; /* مساحة تحت للزر الثابت */
+}
 
-    <label>الدخل المكتسب الشهري:</label>
-    <input type="number" id="earned" placeholder="مثال: 4000">
+header {
+  background:var(--panel);
+  padding:12px; text-align:center;
+  font-size:18px; font-weight:bold;
+  color:var(--accent);
+}
 
-    <label>الدخل غير المكتسب الشهري:</label>
-    <input type="number" id="unearned" placeholder="مثال: 0">
+.section-card {
+  background:var(--panel);
+  margin:6px; padding:12px;
+  border-radius:10px;
+  box-shadow:0 3px 6px rgba(0,0,0,0.5);
+  color:var(--accent);
+}
 
-    <label>المبالغ المستثناة (مثل دعم الغذاء والكهرباء والإعاقة):</label>
-    <input type="number" id="excluded" placeholder="مثال: 0">
+h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
 
-    <button id="calcBtn">احسب</button>
-    <div class="result" id="result"></div>
-    <div class="warn" id="warning"></div>
-  </div>
+.row { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+.input {
+  background:#222; color:#fff;
+  border:none; border-radius:6px;
+  padding:4px; font-size:13px;
+  text-align:center; width:60px;
+}
+.btn {
+  background:var(--accent); color:#000;
+  font-weight:bold; cursor:pointer;
+  width:100%; margin-top:8px;
+  padding:8px; border-radius:6px;
+  border:none; font-size:14px;
+}
 
-  <!-- زر الرجوع خارج المربع الأخضر -->
-  <a href="index.html" class="icon">⬅️ رجوع إلى الصفحة الرئيسية</a>
+footer {
+  margin-top:auto; text-align:center;
+  padding:8px; font-size:12px;
+  color:var(--gold);
+}
 
-  <script>
-    const cfg = {
-      headAmount: 1100,       // رب الأسرة
-      dependentAmount: 550,   // لكل تابع
-      earnedIncomeFactor: 0.5,
-      unearnedIncomeFactor: 1.0
-    };
-
-    function f(n){ return new Intl.NumberFormat('ar-SA').format(Math.max(0, Math.round(n))); }
-
-    function calculate(){
-      const members = parseInt(document.getElementById("members").value) || 0;
-      const earned = parseFloat(document.getElementById("earned").value) || 0;
-      const unearned = parseFloat(document.getElementById("unearned").value) || 0;
-      const excluded = parseFloat(document.getElementById("excluded").value) || 0;
-
-      const warning = document.getElementById("warning");
-      const result = document.getElementById("result");
-      warning.innerText = "";
-      result.innerText = "";
-
-      if (members < 1) {
-        warning.innerText = "⚠️ الرجاء إدخال عدد أفراد الأسرة (1 على الأقل).";
-        return;
-      }
-
-      const dependents = members - 1;
-      const target = cfg.headAmount + dependents * cfg.dependentAmount;
-
-      const countedIncome = Math.max(0,
-        earned * cfg.earnedIncomeFactor +
-        unearned * cfg.unearnedIncomeFactor -
-        excluded
-      );
-
-      const pension = Math.max(0, target - countedIncome);
-
-      result.innerText =
-        "الحد الأدنى للأسرة: " + f(target) + " ريال\n" +
-        "الدخل المحتسب: " + f(countedIncome) + " ريال\n" +
-        "المعاش النهائي: " + f(pension) + " ريال";
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('calcBtn').addEventListener('click', calculate);
-    });
-  </script>
-</body>
-</html>
-/* زر الرجوع الموحد */.icon {
-  position: fixed;        /* يخلي الزر ثابت */
-  bottom: 15px;           /* يضعه أسفل الشاشة */
-  left: 50%;              /* يضعه في منتصف العرض */
-  transform: translateX(-50%); /* لضبطه بالمنتصف تمامًا */
-
+/* زر الرجوع الموحد */
+.icon {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
   background: linear-gradient(135deg, #22c55e, #16a34a);
-  border: 3px solid #FFD700;
+  border: 3px solid var(--gold);
   border-radius: 12px;
   padding: 14px 28px;
   text-align: center;
@@ -98,13 +68,19 @@
   box-shadow: 0 6px 15px rgba(0,0,0,0.5);
   transition: all 0.3s ease-in-out;
   cursor: pointer;
-  z-index: 999; /* يظهر فوق كل العناصر */
+  z-index: 999;
 }
 
 .icon:hover {
-  background: linear-gradient(135deg, #16a34a, #FFD700);
+  background: linear-gradient(135deg, #16a34a, var(--gold));
   color: #0f172a;
-  transform: translateX(-50%) scale(1.08); /* يبقى بالمنتصف مع تكبير بسيط */
+  transform: translateX(-50%) scale(1.08);
   box-shadow: 0 10px 20px rgba(34,197,94,0.6);
 }
 
+/* ضبط للجوال */
+@media(max-width:600px){
+  header { padding:10px; font-size:17px; }
+  .section-card { margin:4px; padding:10px; }
+  .input { width:80px; }
+}
