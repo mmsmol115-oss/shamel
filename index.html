@@ -199,14 +199,23 @@ document.addEventListener('DOMContentLoaded', function(){
     const now2 = new Date();
     const items = events.map(ev=>{
       const target = nextTargetFrom(ev, now2);
-      const diff = target - now2;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hoursTotal = Math.floor(diff / (1000 * 60 * 60));
+      const diffMs = target - now2;
+
+      if (diffMs <= 0) {
+        return { name:ev.name, highlight:ev.highlight, diff:0, text:'اليوم ✅' };
+      }
+
+      const hoursTotal = Math.floor(diffMs / (1000 * 60 * 60));
+
       let text;
-      if (diff <= 0) text = 'اليوم ✅';
-      else if (days >= 1) text = `متبقي ${days} يوم`;
-      else text = `متبقي ${hoursTotal} ساعة`;
-      return { name:ev.name, highlight:ev.highlight, diff, text };
+      if (hoursTotal >= 24) {
+        const days = Math.ceil(hoursTotal / 24); // 👈 التحويل الصحيح للأيام
+        text = `متبقي ${days} يوم`;
+      } else {
+        text = `متبقي ${hoursTotal} ساعة`;
+      }
+
+      return { name:ev.name, highlight:ev.highlight, diff:diffMs, text:text };
     }).sort((a,b)=> a.diff - b.diff);
 
     countdownGrid.innerHTML = '';
@@ -216,6 +225,7 @@ document.addEventListener('DOMContentLoaded', function(){
       const nameHtml = `<strong class="${item.highlight ? 'hl' : ''}">${item.name}</strong>`;
       card.innerHTML = `${nameHtml}<br>${item.text}`;
       countdownGrid.appendChild(card);
+
     });
   }
 
@@ -286,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 </body>
 </html>
+
 
 
 
