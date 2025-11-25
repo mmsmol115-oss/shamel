@@ -90,19 +90,23 @@
 
     /* زر الرجوع الموحد */
     .icon {
-      background: var(--bg, #0f172a);
-      border: 2px solid #22c55e;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      color: #f1f5f9;
-      font-weight: bold;
-      cursor: pointer;
-      display: block;
-      text-decoration: none;
-      margin: 20px auto;
-      max-width: 220px;
-    }
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  color: var(--text);
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  margin: 20px auto;
+  max-width: 220px;
+}
+.icon:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
     .icon:hover {
       background: #22c55e;
       color: #0f172a;
@@ -182,3 +186,4 @@
   </script>
 </body>
 </html>
+
