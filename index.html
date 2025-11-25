@@ -318,6 +318,29 @@ document.addEventListener('DOMContentLoaded', function(){
     `📅 اليوم: ${gDate} (ميلادي) | ${hDate} (هجري)`;
 });
 </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  // التاريخ الحالي
+  const now = new Date();
+
+  // التاريخ الميلادي (بالعربية)
+  const gDate = now.toLocaleDateString('ar-SA', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  // التاريخ الهجري باستخدام moment-hijri
+  const hDate = moment(now).format("iYYYY/iM/iD");
+
+  // عرض النتيجة في عنصر مخصص
+  const todayBox = document.getElementById('todayDate');
+  if (todayBox) {
+    todayBox.innerHTML = `📅 الميلادي: ${gDate}<br>🕌 الهجري: ${hDate}`;
+  }
+});
+</script>
 </body>
   <script>
   if ('serviceWorker' in navigator) {
@@ -327,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 </script>
 </html>
+
 
 
 
