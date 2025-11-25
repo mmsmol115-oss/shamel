@@ -17,12 +17,14 @@ header {
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* عمودين على الكمبيوتر */
-  gap: 16px;
-  max-width: 900px;
+  display: flex;
+  flex-direction: row;       /* صف أفقي */
+  justify-content: center;   /* تمركز في الوسط */
+  gap: 16px;                 /* مسافة بين الحاسبات */
+  flex-wrap: nowrap;         /* بدون التفاف، كلها في صف واحد */
   margin: 20px auto;
   padding: 0 16px;
+  overflow-x: auto;          /* يسمح بالتمرير إذا زاد عدد الحاسبات */
 }
 
 .icon {
@@ -81,3 +83,4 @@ header {
     padding: 14px;
   }
 }
+
