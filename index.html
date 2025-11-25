@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function(){
     { name:'يوم التأسيس السعودي', fixedMonth:1, fixedDay:22, highlight:true }
   ];
 
-  // ✅ تعديل الدالة بحيث لا تقفز للشهر القادم إذا اليوم هو يوم الصرف
+  // دالة تحديد التاريخ القادم
   function nextTargetFrom(event, now){
     if (event.fixedMonth !== undefined) {
       let t = new Date(now.getFullYear(), event.fixedMonth, event.fixedDay, 0, 0, 0);
@@ -130,4 +130,7 @@ document.addEventListener('DOMContentLoaded', function(){
           t.getFullYear() === now.getFullYear()) {
         return t;
       }
-      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0, 0,
+      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0, 0, 0);
+      return t;
+    } else {
+      let
