@@ -11,16 +11,10 @@
 
 <style>
 :root { --bg:#000; --panel:#111; --text:#f1f5f9; --accent:#6fae3f; --alert:#b22222; --gold:#FFD700; }
-
 body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family:'Tahoma'; display:flex; flex-direction:column; min-height:100vh; }
 header { background:var(--panel); padding:12px; text-align:center; font-size:18px; font-weight:bold; color:var(--accent); }
 .section-card { background:var(--panel); margin:6px; padding:12px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.5); color:var(--accent); }
 h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
-
-/* الحاسبات */
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:10px; margin:12px 0; }
-.icon { display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid rgba(111,174,63,0.5); border-radius:8px; height:82px; font-size:12px; color:var(--text); font-weight:bold; text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,0.4); text-align:center; }
-.icon:hover { background:var(--accent); color:var(--bg); }
 
 /* العد التنازلي */
 .countdown-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:10px; margin:12px 0; }
@@ -34,11 +28,13 @@ h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
 .converter-flex { display:flex; gap:12px; align-items:stretch; }
 .converter-inputs { flex:2; min-width:220px; }
 .today-box { flex:1; min-width:140px; background:#0f172a; border:1px solid var(--gold); border-radius:8px; padding:8px; text-align:center; color:var(--gold); font-size:13px; box-shadow:0 0 4px rgba(34,197,94,0.25); }
-
-/* عناصر الإدخال */
 .row { display:flex; gap:6px; margin-bottom:8px; }
 .input { background:#222; color:#fff; border:none; border-radius:6px; padding:6px; font-size:16px; text-align:center; flex:1; min-width:60px; }
 .btn { background:var(--accent); color:#000; font-weight:bold; cursor:pointer; padding:6px 12px; border-radius:6px; border:none; font-size:14px; }
+
+/* الحاسبات */
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:10px; margin:12px 0; }
+.icon { display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid rgba(111,174,63,0.5); border-radius:8px; height:82px; font-size:12px; color:var(--text); font-weight:bold; text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,0.4); text-align:center; }
 
 footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:var(--gold); }
 </style>
@@ -54,16 +50,16 @@ footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:
     <div class="converter-inputs">
       <label>أدخل التاريخ الميلادي:</label>
       <div class="row" id="gInputs">
-        <input type="text" id="gDay" class="input" placeholder="اليوم" inputmode="numeric">
-        <input type="text" id="gMonth" class="input" placeholder="الشهر" inputmode="numeric">
-        <input type="text" id="gYear" class="input" placeholder="السنة" inputmode="numeric">
+        <input type="text" id="gDay" class="input" placeholder="اليوم" inputmode="numeric" autocomplete="off">
+        <input type="text" id="gMonth" class="input" placeholder="الشهر" inputmode="numeric" autocomplete="off">
+        <input type="text" id="gYear" class="input" placeholder="السنة" inputmode="numeric" autocomplete="off">
       </div>
 
       <label>أدخل التاريخ الهجري:</label>
       <div class="row" id="hInputs">
-        <input type="text" id="hDay" class="input" placeholder="اليوم" inputmode="numeric">
-        <input type="text" id="hMonth" class="input" placeholder="الشهر" inputmode="numeric">
-        <input type="text" id="hYear" class="input" placeholder="السنة" inputmode="numeric">
+        <input type="text" id="hDay" class="input" placeholder="اليوم" inputmode="numeric" autocomplete="off">
+        <input type="text" id="hMonth" class="input" placeholder="الشهر" inputmode="numeric" autocomplete="off">
+        <input type="text" id="hYear" class="input" placeholder="السنة" inputmode="numeric" autocomplete="off">
       </div>
 
       <button class="btn" id="convertBtn">تحويل</button>
@@ -77,7 +73,7 @@ footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:
   </div>
 </div>
 
-<!-- العد التنازلي -->
+<!-- العد التنازلي (countdownGrid مرة واحدة هنا فقط) -->
 <div class="section-card">
   <h2>متبقي على :</h2>
   <div class="countdown-grid" id="countdownGrid"></div>
@@ -101,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const todayBox = document.getElementById('todayDate');
   const countdownGrid = document.getElementById('countdownGrid');
 
-  // عرض التاريخ
+  // عرض تاريخ اليوم
   const now = new Date();
   const weekday = new Intl.DateTimeFormat('ar-SA-u-ca-gregory',{weekday:'long'}).format(now);
   const gDate = new Intl.DateTimeFormat('ar-SA-u-ca-gregory',{year:'numeric',month:'long',day:'numeric'}).format(now);
@@ -109,14 +105,17 @@ document.addEventListener('DOMContentLoaded', function(){
   try { hDate = moment(now).format('iYYYY/iM/iD'); } catch(e){}
   todayBox.innerHTML = `${weekday}<br>الميلادي: ${gDate}<br>الهجري: ${hDate}`;
 
-  // أحداث العد التنازلي
+  // بيانات الأحداث
   const events = [
     { name:'الراتب', day:27 },
     { name:'التقاعد', day:1 },
+    { name:'الضمان المطور', day:1 },
     { name:'ساند', day:1 },
     { name:'حافز', day:5 },
     { name:'دعم ريف', day:10, highlight:true },
+    { name:'الدعم الزراعي', day:1 },
     { name:'حساب المواطن', day:10 },
+    { name:'الدعم العقاري', day:24 },
     { name:'التأهيل الشامل', day:26 },
     { name:'اليوم الوطني السعودي', fixedMonth:8, fixedDay:23, highlight:true },
     { name:'يوم التأسيس السعودي', fixedMonth:1, fixedDay:22, highlight:true }
@@ -144,4 +143,92 @@ document.addEventListener('DOMContentLoaded', function(){
         return { name:ev.name, highlight:ev.highlight, diff:0, text:'اليوم ✅' };
       }
 
-      const hoursTotal =
+      const hoursTotal = Math.floor(diffMs / (1000 * 60 * 60));
+      let text;
+      if (hoursTotal >= 24) {
+        const days = Math.ceil(hoursTotal / 24);
+        text = `متبقي ${days} يوم`;
+      } else {
+        text = `متبقي ${hoursTotal} ساعة`;
+      }
+
+      return { name:ev.name, highlight:ev.highlight, diff:diffMs, text:text };
+    }).sort((a,b)=> a.diff - b.diff);
+
+    countdownGrid.innerHTML = '';
+    items.forEach(item=>{
+      const card = document.createElement('div');
+      card.className = 'countdown-card' + (item.text.includes('اليوم') ? ' done' : '');
+      const nameHtml = `<strong class="${item.highlight ? 'hl' : ''}">${item.name}</strong>`;
+      card.innerHTML = `${nameHtml}<br>${item.text}`;
+      countdownGrid.appendChild(card);
+    });
+  }
+
+  updateCountdowns();
+  setInterval(updateCountdowns, 1000);
+
+  // محول التاريخ (اختياري)
+  function onlyDigits(s){ return String(s).replace(/\D+/g,''); }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function isIntInRange(val, min, max){
+    const s = String(val).trim();
+    if(s === '' || !/^\d+$/.test(s)) return false;
+    const n = Number(s);
+    return Number.isInteger(n) && n >= min && n <= max;
+  }
+  function show(msg){ const r = document.getElementById('conversionResult'); if(r) r.textContent = msg; }
+
+  function attachInputs(containerId){
+    const el = document.getElementById(containerId);
+    if(!el) return;
+    const inputs = Array.from(el.querySelectorAll('input'));
+    inputs.forEach((inp, idx)=>{
+      inp.addEventListener('input', ()=>{
+        inp.value = onlyDigits(inp.value);
+        const maxlen = idx === 2 ? 4 : 2;
+        if(inp.value.length >= maxlen && idx + 1 < inputs.length){
+          inputs[idx+1].focus();
+          inputs[idx+1].select && inputs[idx+1].select();
+        }
+      });
+      inp.addEventListener('focus', ()=>{ /* لا نمسح القيمة تلقائياً */ });
+    });
+  }
+  attachInputs('gInputs');
+  attachInputs('hInputs');
+
+  function convertDate(){
+    const hasHijri = typeof moment !== 'undefined' && moment.fn && typeof moment.fn.iYear === 'function';
+    if(!hasHijri){ show('مكتبة التحويل الهجري غير متاحة.'); return; }
+
+    const gD = document.getElementById('gDay').value;
+    const gM = document.getElementById('gMonth').value;
+    const gY = document.getElementById('gYear').value;
+    const hD = document.getElementById('hDay').value;
+    const hM = document.getElementById('hMonth').value;
+    const hY = document.getElementById('hYear').value;
+
+    // ميلادي -> هجري
+    if(isIntInRange(gD,1,31) && isIntInRange(gM,1,12) && isIntInRange(gY,1,9999)){
+      const gStr = `${gY}-${pad2(gM)}-${pad2(gD)}`;
+      const mg = moment(gStr, 'YYYY-MM-DD', true);
+      if(!mg.isValid()){ show('تاريخ ميلادي غير صالح.'); return; }
+      show(`التاريخ الهجري: ${mg.format('iYYYY/iM/iD')}`);
+      return;
+    }
+    // هجري -> ميلادي
+    if(isIntInRange(hD,1,30) && isIntInRange(hM,1,12) && isIntInRange(hY,1,9999)){
+      const mh = moment(`${Number(hY)}/${Number(hM)}/${Number(hD)}`, 'iYYYY/iM/iD', true);
+      if(!mh.isValid()){ show('تاريخ هجري غير صالح.'); return; }
+      show(`التاريخ الميلادي: ${mh.format('YYYY/MM/DD')}`);
+      return;
+    }
+    show('أدخل اليوم ثم الشهر ثم السنة كاملة في إحدى الخانات.');
+  }
+  const btn = document.getElementById('convertBtn');
+  if(btn) btn.addEventListener('click', convertDate);
+});
+</script>
+</body>
+</html>
