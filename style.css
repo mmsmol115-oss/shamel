@@ -1,3 +1,4 @@
+/* الأساسيات */
 body {
   margin: 0;
   padding: 0;
@@ -42,7 +43,7 @@ header {
   transform: translateX(-50%) scale(1.08);
 }
 
-/* قسم محول التاريخ */
+/* قسم محول التاريخ (استعادة الشكل السابق) */
 .converter-box {
   display: block;
   padding: 12px;
@@ -87,7 +88,45 @@ header {
   width: auto;
 }
 
-/* للجوال */
+/* بطاقات العد التنازلي (استعادة الشكل السابق) */
+.section-card {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: #1e293b;
+  border: 2px solid #22c55e;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.countdown-card {
+  background: #0f172a;
+  border: 1px solid #22c55e;
+  border-radius: 8px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #f1f5f9;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.countdown-card.done {
+  border-color: #FFD700;
+}
+
+.hl {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+/* للجوال (استعادة السلوك السابق وإزالة أي تغيير على .grid) */
 @media (max-width: 640px) {
   .converter-flex {
     flex-direction: row;
@@ -97,11 +136,11 @@ header {
   }
 }
 
-/* --- تعديل الحاسبات فقط --- */
+/* --- تعديل الحاسبات فقط: نفس مقاس البطاقات ونفس الفواصل --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* نفس عرض البطاقات */
-  gap: 10px;   /* نفس الفاصل المستخدم في البطاقات */
+  gap: 10px;
   margin: 12px 0;
 }
 
@@ -114,7 +153,7 @@ header {
   border-radius: 8px;
   height: 82px;             /* نفس ارتفاع البطاقات */
   padding: 0;               /* إزالة الحشوة الزائدة */
-  font-size: 11px;          /* نفس حجم النص تقريبًا */
+  font-size: 11px;          /* متناسق مع البطاقات */
   color: var(--text);
   font-weight: bold;
   text-decoration: none;
