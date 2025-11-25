@@ -86,11 +86,11 @@
 <body>
   <header>الصفحة الرئيسية</header>
 
-  <!-- محول التاريخ --><div class="section-card converter-box">
+  <div class="section-card converter-box">
+  <h2>محول التاريخ</h2>
   <div class="converter-flex">
+    <!-- محول التاريخ -->
     <div class="converter-inputs">
-      <h2>محول التاريخ</h2>
-      <!-- الحقول كما هي -->
       <label>أدخل التاريخ الميلادي:</label>
       <div class="row" id="gInputs">
         <input type="text" id="gDay" class="input" placeholder="اليوم">
@@ -106,12 +106,12 @@
       </div>
 
       <button class="btn" id="convertBtn">تحويل</button>
-      <div id="conversionResult" style="margin-top:6px;"></div>
+      <div id="conversionResult"></div>
     </div>
 
-    <!-- خانة التاريخ الحالي -->
+    <!-- خانة اليوم -->
     <div class="today-box">
-      <h2>اليوم</h2>
+      <h3>تاريخ اليوم</h3>
       <div id="todayDate"></div>
     </div>
   </div>
@@ -365,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </script>
 </html>
+
 
 
 
