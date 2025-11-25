@@ -90,6 +90,9 @@
     </div>
 
     <button class="btn" id="convertBtn">تحويل</button>
+    <div id="todayDate" style="margin-top:6px; font-size:14px; color:var(--gold);">
+📅 اليوم:
+</div>
     <div id="conversionResult" style="margin-top:6px;"></div>
   </div>
 
@@ -189,8 +192,8 @@
       const events = [
         { name: "الراتب", day: 27 },
         { name: "التقاعد", day: 1 },
-        { name: "الضمان المطور", day: 10 },
-        { name: "ساند", day: 10 },
+        { name: "الضمان المطور", day: 1 },
+        { name: "ساند", day: 1 },
         { name: "حافز", day: 5 },
         { name: "دعم ريف", day: 10, highlight: true },
         { name: "الدعم الزراعي", day: 1 },
@@ -278,13 +281,23 @@
     deferredPrompt = e;
     document.getElementById('installApp').style.display = 'inline-block';
 
-    document.getElementById('installApp').addEventListener('click', () => {
+    document.getElementById('installApp').addEventListener('click', () => {2
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         deferredPrompt = null;
       });
     });
   });
+</script>
+  <script>
+document.addEventListener('DOMContentLoaded', function(){
+  const today = new Date();
+  const gDate = today.toLocaleDateString('ar-SA'); // التاريخ الميلادي
+  const hDate = moment(today).format("iYYYY/iM/iD"); // التاريخ الهجري باستخدام moment-hijri
+
+  document.getElementById("todayDate").innerHTML =
+    `📅 اليوم: ${gDate} (ميلادي) | ${hDate} (هجري)`;
+});
 </script>
 </body>
   <script>
@@ -295,6 +308,7 @@
   }
 </script>
 </html>
+
 
 
 
