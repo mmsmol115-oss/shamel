@@ -20,7 +20,7 @@ h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 10px; /* فصل واضح بين الأزرار */
   margin: 12px 0;
 }
 .icon {
@@ -131,18 +131,19 @@ document.addEventListener('DOMContentLoaded', function(){
   const hDate = hasHijri ? moment(now).format("iYYYY/iM/iD") : "غير متاح";
   document.getElementById('todayDate').innerHTML = `الميلادي: ${gDate}<br>الهجري: ${hDate}`;
 
-  // أدوات الإدخال
-  function onlyDigits(s){ return String(s).replace(/\D+/g,''); }
-  function pad2(n){ return String(n).padStart(2,'0'); }
-  function isIntInRange(val, min, max){
-    const s = String(val).trim();
-    if(s === '' || !/^\d+$/.test(s)) return false;
-    const n = Number(s);
-    return Number.isInteger(n) && n >= min && n <= max;
-  }
-  function show(msg){ document.getElementById('conversionResult').textContent = msg; }
+  // العد التنازلي
+  const events = [
+    { name: "الراتب", day: 27 },
+    { name: "التقاعد", day: 1 },
+    { name: "الضمان المطور", day: 1 },
+    { name: "ساند", day: 1 },
+    { name: "حافز", day: 5 },
+    { name: "دعم ريف", day: 10, highlight: true },
+    { name: "الدعم الزراعي", day: 1 },
+    { name: "حساب المواطن", day: 10 },
+    { name: "الدعم العقاري", day: 24 },
+    { name: "التأهيل الشامل", day: 26 }
+  ];
 
-  function attachAutoAdvance(containerId){
-    const inputs = Array.from(document.getElementById(containerId).querySelectorAll('input'));
-    inputs.forEach((inp, idx)=>{
-      inp.addEventListener('
+  function nextTargetFrom(event, now){
+    let t = new Date(now.getFull
