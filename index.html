@@ -35,9 +35,9 @@ h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
 .countdown-card.done { border-color:#2ecc71; color:#2ecc71; }
 .hl { color:var(--alert); font-weight:bold; }
 
-/* الحاسبات: صف واحد بأربع أزرار مع مسافة فاصلة بسيطة */
-.grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:12px 0; }
-.icon { background:var(--bg); border:2px solid var(--accent); border-radius:8px; padding:10px; text-align:center; color:var(--text); font-weight:bold; text-decoration:none; font-size:13px; width:100%; }
+/* الحاسبات */
+.grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin:12px 0; }
+.icon { background:var(--bg); border:2px solid var(--accent); border-radius:8px; padding:12px; text-align:center; color:var(--text); font-weight:bold; text-decoration:none; font-size:13px; width:100%; }
 .icon:hover { background:var(--accent); color:var(--bg); }
 
 /* للجوال */
@@ -45,8 +45,8 @@ h2 { margin:0 0 8px 0; color:var(--gold); font-size:16px; }
   .converter-flex { gap:8px; }
   .input { padding:5px; font-size:12px; min-width:54px; }
   .today-box { min-width:120px; padding:6px; font-size:12px; }
-  .grid { grid-template-columns:repeat(4, 1fr); gap:6px; }
-  .icon { padding:8px; font-size:12px; }
+  .grid { grid-template-columns:repeat(4, 1fr); gap:8px; }
+  .icon { padding:10px; font-size:12px; }
 }
 footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:var(--gold); }
 </style>
@@ -62,16 +62,16 @@ footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:
     <div class="converter-inputs">
       <label>أدخل التاريخ الميلادي:</label>
       <div class="row" id="gInputs">
-        <input type="text" id="gDay" class="input" placeholder="اليوم" inputmode="numeric" autocomplete="off" data-maxlen="2">
-        <input type="text" id="gMonth" class="input" placeholder="الشهر" inputmode="numeric" autocomplete="off" data-maxlen="2">
-        <input type="text" id="gYear" class="input" placeholder="السنة" inputmode="numeric" autocomplete="off" data-maxlen="4">
+        <input type="text" id="gDay" class="input" placeholder="اليوم" data-maxlen="2">
+        <input type="text" id="gMonth" class="input" placeholder="الشهر" data-maxlen="2">
+        <input type="text" id="gYear" class="input" placeholder="السنة" data-maxlen="4">
       </div>
 
       <label>أدخل التاريخ الهجري:</label>
       <div class="row" id="hInputs">
-        <input type="text" id="hDay" class="input" placeholder="اليوم" inputmode="numeric" autocomplete="off" data-maxlen="2">
-        <input type="text" id="hMonth" class="input" placeholder="الشهر" inputmode="numeric" autocomplete="off" data-maxlen="2">
-        <input type="text" id="hYear" class="input" placeholder="السنة" inputmode="numeric" autocomplete="off" data-maxlen="4">
+        <input type="text" id="hDay" class="input" placeholder="اليوم" data-maxlen="2">
+        <input type="text" id="hMonth" class="input" placeholder="الشهر" data-maxlen="2">
+        <input type="text" id="hYear" class="input" placeholder="السنة" data-maxlen="4">
       </div>
 
       <button class="btn" id="convertBtn">تحويل</button>
@@ -109,29 +109,30 @@ document.addEventListener('DOMContentLoaded', function(){
   const todayBox = document.getElementById('todayDate');
   const countdownGrid = document.getElementById('countdownGrid');
 
-  // عرض تاريخ اليوم (ميلادي + هجري)
-  try {
-    const hasHijri = typeof moment !== 'undefined' && moment.fn && typeof moment.fn.iYear === 'function';
-    const now = new Date();
-    const gDate = now.toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric', calendar:'gregory' });
-    const hDate = hasHijri ? moment(now).format('iYYYY/iM/iD') : 'غير متاح';
-    if (todayBox) {
-      todayBox.innerHTML = `الميلادي: ${gDate}<br>الهجري: ${hDate}`;
-    }
-  } catch(e) {
-    if (todayBox) todayBox.textContent = 'تعذر عرض تاريخ اليوم.';
-  }
+  // عرض تاريخ اليوم
+  const hasHijri = typeof moment !== 'undefined' && moment.fn && typeof moment.fn.iYear === 'function';
+  const now = new Date();
+  const gDate = now.toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric', calendar:'gregory' });
+  const hDate = hasHijri ? moment(now).format('iYYYY/iM/iD') : 'غير متاح';
+  todayBox.innerHTML = `الميلادي: ${gDate}<br>الهجري: ${hDate}`;
 
-  // أدوات الإدخال
-  function onlyDigits(s){ return String(s).replace(/\D+/g,''); }
-  function pad2(n){ return String(n).padStart(2,'0'); }
-  function isIntInRange(val, min, max){
-    const s = String(val).trim();
-    if(s === '' || !/^\d+$/.test(s)) return false;
-    const n = Number(s);
-    return Number.isInteger(n) && n >= min && n <= max;
-  }
-  function show(msg){ const r = document.getElementById('conversionResult'); if(r) r.textContent = msg; }
+  // أحداث العد التنازلي
+  const events = [
+    { name:'الراتب', day:27 },
+    { name:'التقاعد', day:1 },
+    { name:'الضمان المطور', day:1 },
+    { name:'ساند', day:1 },
+    { name:'حافز', day:5 },
+    { name:'دعم ريف', day:10, highlight:true },
+    { name:'الدعم الزراعي', day:1 },
+    { name:'حساب المواطن', day:10 },
+    { name:'الدعم العقاري', day:24 },
+    { name:'التأهيل الشامل', day:26 },
+    { name:'اليوم الوطني السعودي', month:8, day:23, highlight:true }, // سبتمبر (0=يناير)
+    { name:'يوم التأسيس السعودي', month:1, day:22, highlight:true }   // فبراير
+  ];
 
-  function attachInputs(containerId){
-    const el = document.getElementBy
+  function nextTargetFrom(event, now){
+    if(event.month !== undefined){
+      let t = new Date(now.getFullYear(), event.month, event.day);
+      if(t < now) t = new Date(now.getFullYear()+1, event.month
