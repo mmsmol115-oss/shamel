@@ -18,13 +18,12 @@ header {
 
 .grid {
   display: flex;
-  flex-direction: row;       /* صف أفقي */
-  justify-content: center;   /* تمركز في الوسط */
-  gap: 16px;                 /* مسافة بين الحاسبات */
-  flex-wrap: nowrap;         /* بدون التفاف، كلها في صف واحد */
+  flex-direction: row;       /* صف أفقي على الكمبيوتر */
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;           /* يسمح بالالتفاف */
   margin: 20px auto;
   padding: 0 16px;
-  overflow-x: auto;          /* يسمح بالتمرير إذا زاد عدد الحاسبات */
 }
 
 .icon {
@@ -73,16 +72,7 @@ header {
   transform: translateX(-50%) scale(1.08);
 }
 
-/* للجوال */
-@media (max-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr; /* عمود واحد */
-  }
-  .icon {
-    font-size: 16px;
-    padding: 14px;
-  }
-}
+/* قسم محول التاريخ */
 .converter-box {
   display: block;
   padding: 12px;
@@ -99,11 +89,11 @@ header {
 }
 
 .converter-inputs {
-  flex: 2; /* محول التاريخ أكبر */
+  flex: 2;
 }
 
 .today-box {
-  flex: 1; /* خانة اليوم أصغر */
+  flex: 1;
   background: #0f172a;
   border: 1px solid #FFD700;
   border-radius: 8px;
@@ -135,17 +125,14 @@ header {
   .converter-inputs, .today-box {
     flex: 1;
   }
+  .grid {
+    flex-direction: column; /* عمود واحد للحاسبات */
+    align-items: center;
+  }
+  .icon {
+    font-size: 16px;
+    padding: 14px;
+    width: 100%; /* كل بطاقة تأخذ عرض الشاشة */
+    max-width: 300px;
+  }
 }
-.btn {
-  background: #22c55e;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 6px 12px;   /* حجم أصغر */
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;     /* خط عادي */
-  width: auto;         /* لا يأخذ العرض كامل */
-}
-
-
