@@ -73,7 +73,7 @@ footer { margin-top:auto; text-align:center; padding:8px; font-size:12px; color:
   </div>
 </div>
 
-<!-- العد التنازلي -->
+<!-- العد التنازلي (countdownGrid مرة واحدة هنا فقط) -->
 <div class="section-card">
   <h2>متبقي على :</h2>
   <div class="countdown-grid" id="countdownGrid"></div>
@@ -121,16 +121,121 @@ document.addEventListener('DOMContentLoaded', function(){
     { name:'يوم التأسيس السعودي', fixedMonth:1, fixedDay:22, highlight:true }
   ];
 
-  // دالة تحديد التاريخ القادم
   function nextTargetFrom(event, now){
     if (event.fixedMonth !== undefined) {
-      let t = new Date(now.getFullYear(), event.fixedMonth, event.fixedDay, 0, 0, 0);
-      if (t.getDate() === now.getDate() &&
-          t.getMonth() === now.getMonth() &&
-          t.getFullYear() === now.getFullYear()) {
-        return t;
-      }
-      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay, 0, 0, 0);
+      let t = new Date(now.getFullYear(), event.fixedMonth, event.fixedDay);
+      if (t < now) t = new Date(now.getFullYear()+1, event.fixedMonth, event.fixedDay);
       return t;
     } else {
-      let
+      let t = new Date(now.getFullYear(), now.getMonth(), event.day);
+      if (t < now) t = new Date(now.getFullYear(), now.getMonth()+1, event.day);
+      return t;
+    }
+  }
+function updateCountdowns(){
+  const now2 = new Date();
+  const startOfToday = new Date(now2.getFullYear(), now2.getMonth(), now2.getDate(), 0, 0, 0);
+
+  const items = events.map(ev=>{
+    const target = nextTargetFrom(ev, now2);
+    const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0);
+
+    let text;
+    let diffDays = Math.floor((startOfTarget - startOfToday) / (1000 * 60 * 60 * 24));
+
+    // 👇 إذا اليوم يساوي يوم الصرف
+    if (diffDays === 0) {
+      text = 'اليوم ✅';
+    } else if (diffDays > 0) {
+      text = `متبقي ${diffDays} يوم`;
+    } else {
+      // لو حصل خطأ في الحساب نخليها اليوم
+      text = 'اليوم ✅';
+      diffDays = 0;
+    }
+
+    return { name:ev.name, highlight:ev.highlight, diff:diffDays, text:text };
+  }).sort((a,b)=> a.diff - b.diff);
+
+  countdownGrid.innerHTML = '';
+  items.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'countdown-card' + (item.text.includes('اليوم') ? ' done' : '');
+    const nameHtml = `<strong class="${item.highlight ? 'hl' : ''}">${item.name}</strong>`;
+    card.innerHTML = `${nameHtml}<br>${item.text}`;
+    countdownGrid.appendChild(card);
+  });
+}
+
+  updateCountdowns();
+  setInterval(updateCountdowns, 1000);
+
+  // محول التاريخ (اختياري)
+  function onlyDigits(s){ return String(s).replace(/\D+/g,''); }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function isIntInRange(val, min, max){
+    const s = String(val).trim();
+    if(s === '' || !/^\d+$/.test(s)) return false;
+    const n = Number(s);
+    return Number.isInteger(n) && n >= min && n <= max;
+  }
+  function show(msg){ const r = document.getElementById('conversionResult'); if(r) r.textContent = msg; }
+
+  function attachInputs(containerId){
+    const el = document.getElementById(containerId);
+    if(!el) return;
+    const inputs = Array.from(el.querySelectorAll('input'));
+    inputs.forEach((inp, idx)=>{
+      inp.addEventListener('input', ()=>{
+        inp.value = onlyDigits(inp.value);
+        const maxlen = idx === 2 ? 4 : 2;
+        if(inp.value.length >= maxlen && idx + 1 < inputs.length){
+          inputs[idx+1].focus();
+          inputs[idx+1].select && inputs[idx+1].select();
+        }
+      });
+      inp.addEventListener('focus', ()=>{ /* لا نمسح القيمة تلقائياً */ });
+    });
+  }
+  attachInputs('gInputs');
+  attachInputs('hInputs');
+
+  function convertDate(){
+    const hasHijri = typeof moment !== 'undefined' && moment.fn && typeof moment.fn.iYear === 'function';
+    if(!hasHijri){ show('مكتبة التحويل الهجري غير متاحة.'); return; }
+
+    const gD = document.getElementById('gDay').value;
+    const gM = document.getElementById('gMonth').value;
+    const gY = document.getElementById('gYear').value;
+    const hD = document.getElementById('hDay').value;
+    const hM = document.getElementById('hMonth').value;
+    const hY = document.getElementById('hYear').value;
+
+    // ميلادي -> هجري
+    if(isIntInRange(gD,1,31) && isIntInRange(gM,1,12) && isIntInRange(gY,1,9999)){
+      const gStr = `${gY}-${pad2(gM)}-${pad2(gD)}`;
+      const mg = moment(gStr, 'YYYY-MM-DD', true);
+      if(!mg.isValid()){ show('تاريخ ميلادي غير صالح.'); return; }
+      show(`التاريخ الهجري: ${mg.format('iYYYY/iM/iD')}`);
+      return;
+    }
+    // هجري -> ميلادي
+    if(isIntInRange(hD,1,30) && isIntInRange(hM,1,12) && isIntInRange(hY,1,9999)){
+      const mh = moment(`${Number(hY)}/${Number(hM)}/${Number(hD)}`, 'iYYYY/iM/iD', true);
+      if(!mh.isValid()){ show('تاريخ هجري غير صالح.'); return; }
+      show(`التاريخ الميلادي: ${mh.format('YYYY/MM/DD')}`);
+      return;
+    }
+    show('أدخل اليوم ثم الشهر ثم السنة كاملة في إحدى الخانات.');
+  }
+  const btn = document.getElementById('convertBtn');
+  if(btn) btn.addEventListener('click', convertDate);
+});
+</script>
+</body>
+</html>
+
+
+
+
+
