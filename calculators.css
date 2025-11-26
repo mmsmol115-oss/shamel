@@ -1,0 +1,98 @@
+:root { 
+  --bg:#000; 
+  --panel:#111; 
+  --text:#f1f5f9; 
+  --accent:#6fae3f; 
+  --gold:#FFD700; 
+}
+
+body { 
+  margin:0; 
+  padding:0; 
+  background:var(--bg); 
+  color:var(--text); 
+  font-family:'Tahoma'; 
+  display:flex; 
+  flex-direction:column; 
+  min-height:100vh; 
+}
+
+header { 
+  background:var(--panel); 
+  padding:12px; 
+  text-align:center; 
+  font-size:18px; 
+  font-weight:bold; 
+  color:var(--accent); 
+}
+
+/* صندوق الحاسبة */
+.calculator-box {
+  background:var(--panel);
+  border:2px solid var(--accent);
+  border-radius:12px;
+  padding:16px;
+  margin:20px auto;
+  max-width:600px;         /* عرض ثابت للحاسبة */
+  width:90%;               /* متناسق مع حجم الشاشة */
+  box-shadow:0 3px 6px rgba(0,0,0,0.5);
+}
+
+/* خانات الإدخال */
+.input {
+  background:#222;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:10px;
+  font-size:18px;          /* يمنع التكبير التلقائي على الجوال */
+  text-align:center;
+  width:100%;              /* الخانة بعرض الصندوق */
+  margin-bottom:10px;
+}
+
+/* صندوق النتيجة */
+.result-box {
+  background:#111;
+  color:var(--gold);
+  border:1px solid var(--accent);
+  border-radius:8px;
+  padding:12px;
+  font-size:16px;
+  text-align:center;
+  margin-top:10px;
+}
+
+/* زر الحاسبة */
+.btn {
+  background:var(--accent);
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+  padding:8px 14px;
+  border-radius:6px;
+  border:none;
+  font-size:14px;
+}
+.btn:hover {
+  background:var(--gold);
+  color:#111;
+}
+
+/* زر الرجوع */
+.back-btn {
+  display:inline-block;
+  margin:10px;
+  padding:6px 12px;   /* أصغر قليلاً */
+  font-size:12px;
+  background:var(--accent);
+  color:#000;
+  border-radius:6px;
+  border:none;        /* زر فعلي */
+  cursor:pointer;
+  font-weight:bold;
+}
+.back-btn:hover {
+  background:var(--gold);
+  color:#111;
+}
