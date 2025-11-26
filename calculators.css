@@ -96,3 +96,22 @@ header {
   background:var(--gold);
   color:#111;
 }
+.back-btn {
+  position: fixed;        /* ثابت في الشاشة */
+  bottom: 20px;           /* أسفل الصفحة */
+  left: 50%;              /* منتصف العرض */
+  transform: translateX(-50%); /* توسيط أفقي */
+  padding:8px 16px;       /* حجم مناسب */
+  font-size:14px;         /* خط واضح */
+  background:var(--accent);
+  color:#000;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.back-btn:hover {
+  background:var(--gold);
+  color:#111;
+}
