@@ -1,24 +1,51 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>حاسبة حساب المواطن</title>
-  <link rel="stylesheet" href="calculators.css">  <style>
-<link rel="stylesheet" href="style.css">
-    body {font-family: Tahoma; direction: rtl; background: #0f172a; color: #f1f5f9; margin:0; padding:0;}
-    .container {background:#1e293b; padding:30px; border-radius:20px; max-width:800px; margin:50px auto;
-      box-shadow:0 0 30px rgba(34,197,94,0.4); border:2px solid #22c55e;}
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="calculators.css">
+  <style>
+    body {font-family: Tahoma; background: #0f172a; color: #f1f5f9; margin:0; padding:0;}
+    .container {
+      background:#1e293b; padding:30px; border-radius:20px; max-width:800px; margin:50px auto;
+      box-shadow:0 0 30px rgba(34,197,94,0.4); border:2px solid #22c55e;
+    }
     h2 {text-align:center; color:#22c55e; font-size:32px; margin-bottom:20px;}
     label {display:block; margin-top:15px; font-weight:bold; color:#86efac;}
-    input, select {width:100%; padding:12px; margin-top:8px; border:1px solid #22c55e; border-radius:8px;
-      background:#334155; color:#fff; font-size:16px; text-align:center;}
-    button {width:100%; padding:14px; margin-top:25px; border:none; border-radius:10px;
+    input, select {
+      width:100%; padding:12px; margin-top:8px; border:1px solid #22c55e; border-radius:8px;
+      background:#334155; color:#fff; font-size:16px; text-align:center;
+    }
+    button {
+      width:100%; padding:14px; margin-top:25px; border:none; border-radius:10px;
       background:linear-gradient(45deg,#22c55e,#86efac); color:#000; font-size:18px; font-weight:bold;
-      cursor:pointer; transition:0.3s;}
+      cursor:pointer; transition:0.3s;
+    }
     button:hover {transform:scale(1.05); box-shadow:0 0 15px rgba(34,197,94,0.6);}
     .result {margin-top:25px; font-size:20px; color:#22c55e; text-align:center; font-weight:bold; white-space:pre-line;}
     .note {color:#9ccb6a; font-size:0.9em; margin-top:10px; text-align:center;}
+    /* زر الرجوع ثابت */
+    .back-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding:8px 16px;
+      font-size:14px;
+      background:#6fae3f;
+      color:#000;
+      border-radius:6px;
+      border:none;
+      cursor:pointer;
+      font-weight:bold;
+      box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    }
+    .back-btn:hover {
+      background:#FFD700;
+      color:#111;
+    }
   </style>
 </head>
 <body>
@@ -44,31 +71,17 @@
 
     <button id="calcBtn">احسب الدعم</button>
     <div class="result" id="result"></div>
-    <div class="note">الحساب تقديري باستخدام منطق الجدول الرسمي والحدود المعتمدة.</div>
+    <div class="note">الحساب تقديري باستخدام القيم الرسمية (رب الأسرة 720، التابع فوق 18 = 360، التابع تحت 18 = 216).</div>
   </div>
-<a href="index.html" class="back-btn">⬅️ رجوع إلى الصفحة الرئيسية</a>
-  <script>
-    const TABLE = [
-      { size:1, adult:0, child:0, full:720, exempt:4310, cutoff:6857 },
-      { size:2, adult:0, child:1, full:960, exempt:5603, cutoff:8914 },
-      { size:3, adult:1, child:1, full:1296, exempt:7758, cutoff:12342 },
-      { size:4, adult:2, child:1, full:1512, exempt:9051, cutoff:14999 },
-      { size:5, adult:3, child:1, full:1728, exempt:10344, cutoff:16456 },
-      { size:6, adult:0, child:5, full:1800, exempt:10775, cutoff:17142 }, // مثالك
-      { size:6, adult:4, child:1, full:2016, exempt:12068, cutoff:19199 },
-      { size:7, adult:5, child:1, full:2088, exempt:12499, cutoff:20000 },
-      { size:8, adult:6, child:1, full:2088, exempt:12499, cutoff:20000 }
-    ];
 
+  <!-- زر الرجوع ثابت -->
+  <button class="back-btn" onclick="location.href='index.html'">⬅ الرجوع للصفحة الرئيسية</button>
+
+  <script>
     function toggleFields() {
       const ben = document.getElementById("beneficiary").value;
       document.getElementById("dependents").style.display = (ben === "single") ? "none" : "block";
       document.getElementById("incomeLabel").innerText = (ben === "single") ? "مجموع الدخل:" : "مجموع دخل الأسرة:";
-    }
-
-    function findRow(above18, under18) {
-      const size = 1 + above18 + under18;
-      return TABLE.find(r => r.size === size && r.adult === above18 && r.child === under18);
     }
 
     function calculate() {
@@ -77,55 +90,40 @@
       const under18 = parseInt(document.getElementById("under18").value) || 0;
       const income = parseFloat(document.getElementById("income").value) || 0;
 
-      const result = document.getElementById("result");
-
+      // الاستحقاق الكامل
+      let full = 0;
       if (beneficiary === "single") {
-        const row = TABLE.find(r => r.size === 1);
-        const support =
-          income <= row.exempt ? row.full :
-          income >= row.cutoff ? 0 :
-          row.full * (1 - (income - row.exempt) / (row.cutoff - row.exempt));
-
-        result.innerText =
-          "الدعم التقديري: " + Math.round(support).toLocaleString("ar-SA") + " ريال\n" +
-          "حد التناقص: " + row.exempt.toLocaleString("ar-SA") + " ريال\n" +
-          "الحد المانع: " + row.cutoff.toLocaleString("ar-SA") + " ريال";
-        return;
+        full = 720; // مستقل
+      } else {
+        full = 720 + (above18 * 360) + (under18 * 216);
       }
 
-      const row = findRow(above18, under18);
-      if (!row) {
-        result.innerText = "تم الحساب باستخدام منطق الجدول الرسمي.";
-        return;
-      }
+      // حدود التناقص والمنع (تقديرية حسب حجم الأسرة)
+      const weight = 1 + above18 + under18;
+      const exempt = weight * 1257;
+      const cutoff = weight * 2091;
 
       let support = 0;
-      if (income <= row.exempt) support = row.full;
-      else if (income >= row.cutoff) support = 0;
-      else support = row.full * (1 - (income - row.exempt) / (row.cutoff - row.exempt));
+      if (income <= exempt) {
+        support = full;
+      } else if (income >= cutoff) {
+        support = 0;
+      } else {
+        const ratio = (income - exempt) / (cutoff - exempt);
+        support = full * (1 - ratio);
+      }
 
-      result.innerText =
+      document.getElementById("result").innerText =
         "الدعم التقديري: " + Math.round(support).toLocaleString("ar-SA") + " ريال\n" +
-        "حد التناقص: " + row.exempt.toLocaleString("ar-SA") + " ريال\n" +
-        "الحد المانع: " + row.cutoff.toLocaleString("ar-SA") + " ريال";
+        "حد التناقص: " + exempt.toLocaleString("ar-SA") + " ريال\n" +
+        "الحد المانع: " + cutoff.toLocaleString("ar-SA") + " ريال";
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('calcBtn').addEventListener('click', calculate);
+      toggleFields();
+      calculate();
     });
-
-    toggleFields();
-    calculate();
   </script>
-  <button class="back-btn" onclick="location.href='index.html'">
-  ⬅ الرجوع للصفحة الرئيسية
-</button>
 </body>
 </html>
-
-
-
-
-
-
-
